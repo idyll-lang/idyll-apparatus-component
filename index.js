@@ -27,7 +27,7 @@ class Apparatus extends React.Component {
     Object.keys(this.props).filter((d) => {
       return d.indexOf('_') !== 0;
     }).filter((d) => {
-      return ['error', 'children'].indexOf(d) === -1;
+      return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
     }).forEach((d) => {
       const currentValue = this.props[d];
       const newValue = nextProps[d];
@@ -115,7 +115,7 @@ class Apparatus extends React.Component {
   }
 
   render() {
-    const { className, idyll, hasError, updateProps, _width, _height, style } = this.props;
+    const { className, _width, _height, style } = this.props;
     return (
       <div ref={(el) => this.handleRef(el)} className={className} style={Object.assign({ margin: '30px auto', width: _width ? _width: '100%', height: _height ? _height : 'auto'}, style)} />
     );
