@@ -1,6 +1,6 @@
 {
   "name": "idyll-apparatus-component",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Component base class to make it easy to integrate Apparatus into Idyll projects",
   "main": "lib.js",
   "scripts": {
