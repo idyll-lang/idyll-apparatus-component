@@ -17,7 +17,7 @@ npm install --save idyll-apparatus-component
 ## Usage
 
 ```
-[Apparatus
+[IdyllApparatusComponent
   _url:"path to json spec"
   _regionOfInterest:`{ x: [-1, 1], y: [-1, 1] }`
   _width: 300
@@ -34,7 +34,7 @@ to bind an Idyll variable named `IdyllN` to an Apparatus attribute called `N`:
 ```
 [var name:“IdyllN” value:0 /]
 
-[Apparatus
+[IdyllApparatusComponent
   _url: ...”
   _regionOfInterest: roi
   _width: 300
