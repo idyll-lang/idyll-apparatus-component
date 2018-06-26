@@ -134,7 +134,7 @@ class Apparatus extends React.Component {
   }
 
   render() {
-    const { className, _width, _height, style } = this.props;
+    const { className, idyll, hasError, updateProps, _width, _height, style } = this.props;
     return (
       <div ref={(el) => this.handleRef(el)} className={className} style={Object.assign({ margin: '30px auto', width: _width ? _width: '100%', height: _height ? _height : 'auto'}, style)} />
     );

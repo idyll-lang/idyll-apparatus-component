@@ -173,6 +173,9 @@ var Apparatus = function (_React$Component) {
 
       var _props = this.props,
           className = _props.className,
+          idyll = _props.idyll,
+          hasError = _props.hasError,
+          updateProps = _props.updateProps,
           _width = _props._width,
           _height = _props._height,
           style = _props.style;
