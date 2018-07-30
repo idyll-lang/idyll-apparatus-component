@@ -29,24 +29,6 @@ var emitter = new _events2.default();
 var scriptLoaded = false;
 var scriptLoading = false;
 
-//http://stackoverflow.com/questions/4588119/get-elements-css-selector-when-it-doesnt-have-an-id
-function fullPath(el) {
-  var names = [];
-  while (el.parentNode) {
-    if (el.id) {
-      names.unshift('#' + el.id);
-      break;
-    } else {
-      if (el == el.ownerDocument.documentElement) names.unshift(el.tagName);else {
-        for (var c = 1, e = el; e.previousElementSibling; e = e.previousElementSibling, c++) {}
-        names.unshift(el.tagName + ":nth-child(" + c + ")");
-      }
-      el = el.parentNode;
-    }
-  }
-  return names.join(" > ");
-}
-
 var Apparatus = function (_React$Component) {
   _inherits(Apparatus, _React$Component);
 
@@ -75,7 +57,7 @@ var Apparatus = function (_React$Component) {
       Object.keys(this.props).filter(function (d) {
         return d.indexOf('_') !== 0;
       }).filter(function (d) {
-        return ['error', 'children'].indexOf(d) === -1;
+        return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
       }).forEach(function (d) {
         var currentValue = _this2.props[d];
         var newValue = nextProps[d];
@@ -114,14 +96,14 @@ var Apparatus = function (_React$Component) {
       console.log('initializing viewer');
       console.log({
         url: this.props._url,
-        selector: fullPath(this._ref),
+        element: this._ref,
         regionOfInterest: this.props._regionOfInterest,
         onRender: this.handleViewerRender
       });
       this.setState({
         viewer: new ApparatusViewer({
           url: this.props._url,
-          selector: fullPath(this._ref),
+          element: this._ref,
           regionOfInterest: this.props._regionOfInterest,
           onRender: this.handleViewerRender
         })
@@ -173,9 +155,6 @@ var Apparatus = function (_React$Component) {
 
       var _props = this.props,
           className = _props.className,
-          idyll = _props.idyll,
-          hasError = _props.hasError,
-          updateProps = _props.updateProps,
           _width = _props._width,
           _height = _props._height,
           style = _props.style;
