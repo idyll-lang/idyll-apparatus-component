@@ -90,47 +90,54 @@ var Apparatus = function (_React$Component) {
   }, {
     key: 'initializeViewer',
     value: function initializeViewer() {
+      var _this4 = this;
+
       if (!this._ref || this.state.viewer) {
         return;
       }
-      console.log('initializing viewer');
-      console.log({
+
+      var viewer = new ApparatusViewer({
         url: this.props._url,
         element: this._ref,
         regionOfInterest: this.props._regionOfInterest,
         onRender: this.handleViewerRender
       });
       this.setState({
-        viewer: new ApparatusViewer({
-          url: this.props._url,
-          element: this._ref,
-          regionOfInterest: this.props._regionOfInterest,
-          onRender: this.handleViewerRender
-        })
+        viewer: viewer
+      });
+
+      Object.keys(this.props).filter(function (d) {
+        return d.indexOf('_') !== 0;
+      }).filter(function (d) {
+        return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
+      }).forEach(function (d) {
+        var val = _this4.props[d];
+        var attribute = viewer.getAttributeByLabel(d);
+        attribute.setExpression(val);
       });
     }
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      var _this4 = this;
+      var _this5 = this;
 
       if (!scriptLoaded && !scriptLoading) {
         scriptLoading = true;
         (0, _littleLoader2.default)("https://rawgit.com/cdglabs/apparatus-site/gh-pages/editor/dist/apparatus-viewer.js", function (err) {
-          console.log('script loaded');
           if (!err) {
-            console.log('no error');
             scriptLoaded = true;
             scriptLoading = false;
-            _this4.initializeViewer();
+            _this5.initializeViewer();
             emitter.emit('scriptloaded');
+          } else {
+            console.warn(err);
           }
         });
       } else if (scriptLoaded) {
         this.initializeViewer();
       } else {
         emitter.on('scriptloaded', function () {
-          _this4.initializeViewer();
+          _this5.initializeViewer();
         });
       }
     }
@@ -151,7 +158,7 @@ var Apparatus = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this5 = this;
+      var _this6 = this;
 
       var _props = this.props,
           className = _props.className,
@@ -160,7 +167,7 @@ var Apparatus = function (_React$Component) {
           style = _props.style;
 
       return _react2.default.createElement('div', { ref: function ref(el) {
-          return _this5.handleRef(el);
+          return _this6.handleRef(el);
         }, className: className, style: Object.assign({ margin: '30px auto', width: _width ? _width : '100%', height: _height ? _height : 'auto' }, style) });
     }
   }]);

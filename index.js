@@ -63,20 +63,25 @@ class Apparatus extends React.Component {
     if (!this._ref || this.state.viewer) {
       return;
     }
-    console.log('initializing viewer')
-    console.log({
+
+    const viewer = new ApparatusViewer({
       url: this.props._url,
       element: this._ref,
       regionOfInterest: this.props._regionOfInterest,
       onRender: this.handleViewerRender
-    })
+    });
     this.setState({
-      viewer: new ApparatusViewer({
-        url: this.props._url,
-        element: this._ref,
-        regionOfInterest: this.props._regionOfInterest,
-        onRender: this.handleViewerRender
-      })
+      viewer: viewer
+    });
+
+    Object.keys(this.props).filter((d) => {
+      return d.indexOf('_') !== 0;
+    }).filter((d) => {
+      return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
+    }).forEach((d) => {
+      const val = this.props[d];
+      const attribute = viewer.getAttributeByLabel(d);
+      attribute.setExpression(val);
     });
   }
 
@@ -84,13 +89,13 @@ class Apparatus extends React.Component {
     if (!scriptLoaded && !scriptLoading) {
       scriptLoading = true;
       load("https://rawgit.com/cdglabs/apparatus-site/gh-pages/editor/dist/apparatus-viewer.js", (err) => {
-        console.log('script loaded')
         if (!err) {
-          console.log('no error')
           scriptLoaded = true;
           scriptLoading = false;
           this.initializeViewer();
           emitter.emit('scriptloaded');
+        } else {
+          console.warn(err);
         }
       });
     } else if (scriptLoaded) {
