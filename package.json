@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/idyll-lang/idyll-apparatus-component#readme",
   "dependencies": {
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-2": "^6.24.1",
     "events": "^1.1.1",
     "little-loader": "^0.2.0"
   },

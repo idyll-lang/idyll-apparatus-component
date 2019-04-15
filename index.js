@@ -16,6 +16,7 @@ class Apparatus extends React.Component {
       viewer: null
     }
 
+    this._hasInitialized = false;
     this.handleViewerRender = this.handleViewerRender.bind(this);
     this.handleRef = this.handleRef.bind(this);
   }
@@ -25,7 +26,7 @@ class Apparatus extends React.Component {
       return;
     }
     Object.keys(this.props).filter((d) => {
-      return d.indexOf('_') !== 0;
+      return d.indexOf('_') !== 0 && (this.props._writeOnly || []).indexOf(d) === -1;
     }).filter((d) => {
       return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
     }).forEach((d) => {
@@ -39,6 +40,9 @@ class Apparatus extends React.Component {
   }
 
   handleViewerRender() {
+    if (!this._hasInitialized) {
+      return;
+    }
     Object.keys(this.props).filter((d) => {
       return d.indexOf('_') !== 0;
     }).filter((d) => {
@@ -74,15 +78,22 @@ class Apparatus extends React.Component {
       viewer: viewer
     });
 
-    Object.keys(this.props).filter((d) => {
-      return d.indexOf('_') !== 0;
-    }).filter((d) => {
-      return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
-    }).forEach((d) => {
-      const val = this.props[d];
-      const attribute = viewer.getAttributeByLabel(d);
-      attribute.setExpression(val);
-    });
+    setTimeout(() => {
+      Object.keys(this.props).filter((d) => {
+        return d.indexOf('_') !== 0 && (this.props._writeOnly || []).indexOf(d) === -1;;
+      }).filter((d) => {
+        return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
+      }).forEach((d) => {
+        const val = this.props[d];
+        try {
+          const attribute = viewer.getAttributeByLabel(d);
+          attribute.setExpression(val);
+        } catch(e) {
+          console.warn(e);
+        }
+      });
+      this._hasInitialized = true;
+    }, 500);
   }
 
   componentDidMount() {

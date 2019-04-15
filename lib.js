@@ -41,6 +41,7 @@ var Apparatus = function (_React$Component) {
       viewer: null
     };
 
+    _this._hasInitialized = false;
     _this.handleViewerRender = _this.handleViewerRender.bind(_this);
     _this.handleRef = _this.handleRef.bind(_this);
     return _this;
@@ -55,7 +56,7 @@ var Apparatus = function (_React$Component) {
         return;
       }
       Object.keys(this.props).filter(function (d) {
-        return d.indexOf('_') !== 0;
+        return d.indexOf('_') !== 0 && (_this2.props._writeOnly || []).indexOf(d) === -1;
       }).filter(function (d) {
         return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
       }).forEach(function (d) {
@@ -72,6 +73,9 @@ var Apparatus = function (_React$Component) {
     value: function handleViewerRender() {
       var _this3 = this;
 
+      if (!this._hasInitialized) {
+        return;
+      }
       Object.keys(this.props).filter(function (d) {
         return d.indexOf('_') !== 0;
       }).filter(function (d) {
@@ -106,15 +110,22 @@ var Apparatus = function (_React$Component) {
         viewer: viewer
       });
 
-      Object.keys(this.props).filter(function (d) {
-        return d.indexOf('_') !== 0;
-      }).filter(function (d) {
-        return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
-      }).forEach(function (d) {
-        var val = _this4.props[d];
-        var attribute = viewer.getAttributeByLabel(d);
-        attribute.setExpression(val);
-      });
+      setTimeout(function () {
+        Object.keys(_this4.props).filter(function (d) {
+          return d.indexOf('_') !== 0 && (_this4.props._writeOnly || []).indexOf(d) === -1;;
+        }).filter(function (d) {
+          return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
+        }).forEach(function (d) {
+          var val = _this4.props[d];
+          try {
+            var attribute = viewer.getAttributeByLabel(d);
+            attribute.setExpression(val);
+          } catch (e) {
+            console.warn(e);
+          }
+        });
+        _this4._hasInitialized = true;
+      }, 500);
     }
   }, {
     key: 'componentDidMount',
