@@ -42,6 +42,7 @@ var Apparatus = function (_React$Component) {
     };
 
     _this._hasInitialized = false;
+    _this._injectingIdyllVars = false;
     _this.handleViewerRender = _this.handleViewerRender.bind(_this);
     _this.handleRef = _this.handleRef.bind(_this);
     return _this;
@@ -69,33 +70,59 @@ var Apparatus = function (_React$Component) {
       });
     }
   }, {
-    key: 'handleViewerRender',
-    value: function handleViewerRender() {
+    key: 'injectIdyllVars',
+    value: function injectIdyllVars() {
       var _this3 = this;
 
+      if (this._injectingIdyllVars) {
+        return;
+      }
+      this._injectingIdyllVars = true;
+      Object.keys(this.props).filter(function (d) {
+        return d.indexOf('_') !== 0 && (_this3.props._writeOnly || []).indexOf(d) === -1;;
+      }).filter(function (d) {
+        return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
+      }).forEach(function (d) {
+        var val = _this3.props[d];
+        try {
+          var attribute = _this3.state.viewer.getAttributeByLabel(d);
+          attribute.setExpression(val);
+        } catch (e) {
+          console.warn(e);
+        }
+      });
+      this._hasInitialized = true;
+      this._injectingIdyllVars = false;
+    }
+  }, {
+    key: 'handleViewerRender',
+    value: function handleViewerRender() {
+      var _this4 = this;
+
       if (!this._hasInitialized) {
+        this.injectIdyllVars();
         return;
       }
       Object.keys(this.props).filter(function (d) {
         return d.indexOf('_') !== 0;
       }).filter(function (d) {
-        return ['error', 'children'].indexOf(d) === -1;
+        return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
       }).forEach(function (d) {
-        var currentValue = _this3.props[d];
+        var currentValue = _this4.props[d];
         try {
-          var attribute = _this3.state.viewer.getAttributeByLabel(d);
+          var attribute = _this4.state.viewer.getAttributeByLabel(d);
           var apparatusValue = attribute.value();
           if (currentValue !== apparatusValue) {
-            _this3.props.updateProps(_defineProperty({}, d, apparatusValue));
+            _this4.props.updateProps(_defineProperty({}, d, apparatusValue));
           }
-        } catch (e) {}
+        } catch (e) {
+          console.warn(e);
+        }
       });
     }
   }, {
     key: 'initializeViewer',
     value: function initializeViewer() {
-      var _this4 = this;
-
       if (!this._ref || this.state.viewer) {
         return;
       }
@@ -109,23 +136,6 @@ var Apparatus = function (_React$Component) {
       this.setState({
         viewer: viewer
       });
-
-      setTimeout(function () {
-        Object.keys(_this4.props).filter(function (d) {
-          return d.indexOf('_') !== 0 && (_this4.props._writeOnly || []).indexOf(d) === -1;;
-        }).filter(function (d) {
-          return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
-        }).forEach(function (d) {
-          var val = _this4.props[d];
-          try {
-            var attribute = viewer.getAttributeByLabel(d);
-            attribute.setExpression(val);
-          } catch (e) {
-            console.warn(e);
-          }
-        });
-        _this4._hasInitialized = true;
-      }, 500);
     }
   }, {
     key: 'componentDidMount',

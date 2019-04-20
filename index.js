@@ -17,6 +17,7 @@ class Apparatus extends React.Component {
     }
 
     this._hasInitialized = false;
+    this._injectingIdyllVars = false;
     this.handleViewerRender = this.handleViewerRender.bind(this);
     this.handleRef = this.handleRef.bind(this);
   }
@@ -39,14 +40,37 @@ class Apparatus extends React.Component {
     });
   }
 
+  injectIdyllVars() {
+    if (this._injectingIdyllVars) {
+      return;
+    }
+    this._injectingIdyllVars = true;
+    Object.keys(this.props).filter((d) => {
+      return d.indexOf('_') !== 0 && (this.props._writeOnly || []).indexOf(d) === -1;;
+    }).filter((d) => {
+      return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
+    }).forEach((d) => {
+      const val = this.props[d];
+      try {
+        const attribute = this.state.viewer.getAttributeByLabel(d);
+        attribute.setExpression(val);
+      } catch(e) {
+        console.warn(e);
+      }
+    });
+    this._hasInitialized = true;
+    this._injectingIdyllVars = false;
+  }
+
   handleViewerRender() {
     if (!this._hasInitialized) {
+      this.injectIdyllVars();
       return;
     }
     Object.keys(this.props).filter((d) => {
       return d.indexOf('_') !== 0;
     }).filter((d) => {
-      return ['error', 'children'].indexOf(d) === -1;
+      return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
     }).forEach((d) => {
       const currentValue = this.props[d];
       try {
@@ -58,7 +82,7 @@ class Apparatus extends React.Component {
           })
         }
       } catch(e) {
-
+        console.warn(e);
       }
     })
   }
@@ -77,23 +101,6 @@ class Apparatus extends React.Component {
     this.setState({
       viewer: viewer
     });
-
-    setTimeout(() => {
-      Object.keys(this.props).filter((d) => {
-        return d.indexOf('_') !== 0 && (this.props._writeOnly || []).indexOf(d) === -1;;
-      }).filter((d) => {
-        return ['error', 'children', 'idyll', 'hasError', 'updateProps'].indexOf(d) === -1;
-      }).forEach((d) => {
-        const val = this.props[d];
-        try {
-          const attribute = viewer.getAttributeByLabel(d);
-          attribute.setExpression(val);
-        } catch(e) {
-          console.warn(e);
-        }
-      });
-      this._hasInitialized = true;
-    }, 500);
   }
 
   componentDidMount() {
